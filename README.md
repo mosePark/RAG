@@ -1,10 +1,3 @@
-# 1) 프로젝트 루트(RAG 폴더)로 이동
-cd C:/Users/BEGAS-NB-100/Desktop/RAG
-
-# 2) README.md에 프로젝트 설명과 사용법 등을 한 번에 쓰기
-cat << 'EOF' > README.md
-# RAG PDF Chatbot
-
 ## 프로젝트 개요
 로컬 환경에서 PDF 문서를 벡터 검색(검색 증강 생성, RAG)을 통해 질의응답할 수 있는 챗봇입니다.  
 - PDF → 텍스트(마크다운) 변환  
