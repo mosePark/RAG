@@ -1,5 +1,0 @@
-﻿chromadb==1.0.8
-langchain==0.3.24
-ollama==0.4.8
-pymupdf4llm==0.0.22
-sentence-transformers==4.1.0
