@@ -5,12 +5,11 @@
 - Ollama 로컬 LLM을 통해 검색된 청크 기반으로 답변 생성  
 
 ## 주요 기능
-1. PDF 로딩 및 청킹 (loader.py)  
+1. PDF 로더 (loader.py)  
 2. 임베딩 생성 및 벡터 DB 저장 (embeddings.py)  
-3. 검색 및 리트리벌(retrieval.py)  
-4. 대화 루프 (chat.py / run.py)  
+3. 검색 (retrieval.py)  
+4. QA (chat.py / run.py)  
 
-## 설치 방법
 
 ## 실행 방법
 
