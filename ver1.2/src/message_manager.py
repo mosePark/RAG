@@ -1,12 +1,17 @@
 # src/message_manager.py
 
 from collections import deque
+import tiktoken
+
+def drop_token(doc: str, max_tokens: int = 300, model: str = "gpt-3.5-turbo") -> str:
+    enc = tiktoken.encoding_for_model(model)
+    tokens = enc.encode(doc)
+    return enc.decode(tokens[:max_tokens])
 
 class MessageManager:
     def __init__(self, system_prompt: str = "", max_history: int = 10):
-        # system_prompt 가 넘어오면 바로 설정
         self._system_msg = {"role": "system", "content": system_prompt}
-        self.queue = deque(maxlen=max_history) # 대화 최대 몇개 저장하는지
+        self.queue = deque(maxlen=max_history)
 
     def create_msg(self, role, content):
         return {"role": role, "content": content}
@@ -18,32 +23,36 @@ class MessageManager:
         msg = self.create_msg("user", content)
         self.queue.append(msg)
 
-    def get_chat(self):
-        return [self._system_msg] + list(self.queue)
-
-    def set_retrived_docs(self, docs):
-        self.retrieved_docs = docs
-
     def append_msg_by_assistant(self, content):
         msg = self.create_msg("assistant", content)
         self.queue.append(msg)
 
-    def generate_prompt(self, retrieved_docs):
+    def generate_prompt(self, retrieved_docs: list[str], doc_token_limit: int = 300) -> list[dict]:
+        # 문서 토큰 자르기
+        model = "gpt-3.5-turbo"
+        limited_docs = [
+            drop_token(doc, max_tokens=doc_token_limit, model=model)
+            for doc in retrieved_docs
+        ]
+        docs_combined = "\n\n".join(limited_docs)
 
-        docs = "\n".join(retrieved_docs)
+        # 가장 마지막 user 질문만 추출
+        user_question = next((msg["content"] for msg in reversed(self.queue) if msg["role"] == "user"), "질문 없음")
 
-        prompt = [msgManager._system_msg,{
-            "role": "system",
-            "content": f"문서 내용: {docs}\n질문에 대한 답변은 문서 내용을 기반으로 정확히 제공하시오.",
-        }] + list(msgManager.queue)
+        return [
+            self._system_msg,
+            {
+                "role": "user",
+                "content": f"[문서 내용]\n{docs_combined}"
+            },
+            {
+                "role": "user",
+                "content": f"[질문]\n{user_question}"
+            }
+        ]
 
-        return prompt
 
-
-msgManager = MessageManager() # 객체 생성
-
+msgManager = MessageManager()
 msgManager.system_msg(
-    "가장 마지막 'user'의 'content'에 대해 답변한다."
-    "질문에 답할 때는 'system' 메시지 중 '문서 내용'에 명시된 부분을 우선 참고하여 정확히 답한다."
-    "개행은 문장이 끝날때와 서로 다른 주제나 항목을 구분할 때 사용하며, 불필요한 개행은 넣지 않는다."
+    "당신은 문서 기반 응답 시스템입니다. '문서 내용'을 참고해 '질문'에 대해 한국어로 정확하고 간결하게 요약된 답변을 하세요. 질문이 명확하지 않더라도 문서를 기준으로 최대한 구체적으로 설명하세요."
 )

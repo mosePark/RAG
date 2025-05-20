@@ -24,7 +24,7 @@ class EmbeddingStore:
             self.es = es_client
         else:
             es_host     = os.getenv("ES_HOST", "https://localhost:9200")
-            # print(f"[DEBUG] → ES_HOST from env: {es_host!r}") # 디버깅 코드 한줄 나중에 지우기기
+            # print(f"[DEBUG] → ES_HOST from env: {es_host!r}") # 디버깅 코드 한줄 나중에 지우기
             es_user     = os.getenv("ES_USER")
             es_password = os.getenv("ES_PASSWORD")
             auth = (es_user, es_password) if es_user and es_password else None

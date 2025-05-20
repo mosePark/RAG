@@ -1,3 +1,5 @@
+# src/chat.py
+
 import os
 import sys
 from dotenv import load_dotenv
@@ -44,11 +46,16 @@ def generate_answer(query, retrieved_docs, conversation_history):
     print("RAG : ", end="", flush=True)
     full_answer = ""
     for response in ollama.chat(model=model, messages=msg, stream=True):
-        chunk = response.get("message", {}).get("content", "")
-        print(chunk, end="", flush=True)
-        full_answer += chunk
-    print()
+        # response가 ChatResponse 객체일 때
+        if hasattr(response, "message") and response.message:
+            content = response.message.content or ""       # // 변경
+        else:
+            # 혹시 dict 형태로 온다면 예전 방식으로도 처리
+            content = response.get("message", {}).get("content", "")
+        print(content, end="", flush=True)
+        full_answer += content
 
+    print()
     return full_answer
 
 
@@ -60,10 +67,14 @@ def chat_loop(top_k: int = 2):
             print("챗봇 종료!")
             break
 
+        print("문서 검색 중입니다.")
         docs = retrieve_documents(query, get_store(), top_k=top_k)
+        print("문서 검색 완료")
         if not docs:
             print("관련 문서를 찾을 수 없습니다.")
             continue
 
         answer = generate_answer(query, docs, msgManager.queue)
+        print("답변 생성 완료료")
         msgManager.append_msg_by_assistant(answer)
+        print("답변 생성 저장")
