@@ -1,0 +1,7 @@
+ollama==0.4.8
+python-dotenv==1.1.0
+langchain==0.3.25
+pymupdf4llm==0.0.24
+elasticsearch==9.0.1
+openai==1.78.1
+tiktoken==0.9.0

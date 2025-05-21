@@ -8,7 +8,7 @@ from ollama import ChatResponse, Message
 question = input("질문을 입력하세요: ")
 model_name = "qwen3:4b"
 messages = [
-    Message(role="system", content="You are a helpful assistant."),
+    Message(role="system", content="You are a helpful chatbot."),
     Message(role="user", content=question)
 ]
 
@@ -99,7 +99,7 @@ def count_tokens_from_messages(messages, model="gpt-3.5-turbo"):
     total_tokens += 2  # reply primer
     return total_tokens
 
-#%%
+# %%
 
 # 프롬프트 생성
 msgManager.append_msg(query)  # 사용자 질문 추가
